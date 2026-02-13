@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<div class="dashboard-grid">
+    <!-- Areas Management -->
+    <div class="card">
+        <h3>Predefined Delivery Areas</h3>
+        <form action="{{ url_for('admin.add_area') }}" method="POST">
+            <input type="text" name="name" placeholder="New Area Name" required>
+            <button type="submit">Add Area</button>
+        </form>
+        <ul>
+            {% for area in areas %}
+            <li>{{ area.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Charges Management -->
+    <div class="card">
+        <h3>Delivery Charges</h3>
+        <form action="{{ url_for('admin.set_charge') }}" method="POST">
+            <select name="from_area_id" required>
+                <option value="" disabled selected>From Area</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="to_area_id" required>
+                <option value="" disabled selected>To Area</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" step="0.01" name="amount" placeholder="Charge Amount" required>
+            <button type="submit">Set Charge</button>
+        </form>
+        <table>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Amount</th>
+            </tr>
+            {% for charge in charges %}
+            <tr>
+                <td>{{ charge.from_area.name }}</td>
+                <td>{{ charge.to_area.name }}</td>
+                <td>${{ charge.amount }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <!-- Partner Management -->
+    <div class="card">
+        <h3>Partner Requests</h3>
+        <ul>
+            {% for partner in pending_partners %}
+            <li>
+                {{ partner.username }} 
+                <a href="{{ url_for('admin.approve_partner', partner_id=partner.id) }}">Accept</a>
+            </li>
+            {% else %}
+            <li>No pending requests.</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Active Partners</h3>
+         <ul>
+            {% for partner in active_partners %}
+            <li>
+                {{ partner.username }} - Rating: {{ partner.rating_avg|round(1) if partner.rating_avg else 'N/A' }}
+                <a href="{{ url_for('admin.remove_partner', partner_id=partner.id) }}" onclick="return confirm('Are you sure?')">Remove</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Earnings & Analytics -->
+    <div class="card">
+        <h3>Commission Settings</h3>
+        <form action="{{ url_for('admin.set_commission') }}" method="POST">
+            <label>Current Percentage: {{ current_commission }}%</label>
+            <input type="number" step="0.1" name="percentage" value="{{ current_commission }}" required>
+            <button type="submit">Update</button>
+        </form>
+
+        <h3>Total Earnings (Commission)</h3>
+        <p class="large-text">${{ total_earnings }}</p>
+    </div>
+</div>
+{% endblock %}

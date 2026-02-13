@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block content %}
+<h2>Customer Dashboard</h2>
+
+<div class="dashboard-grid">
+    <!-- Place Order -->
+    <div class="card">
+        <h3>Place New Order</h3>
+        <form action="{{ url_for('customer.create_order') }}" method="POST">
+            <div class="form-group">
+                <label>Pickup Area</label>
+                <select name="pickup_area_id" required>
+                    {% for area in areas %}
+                    <option value="{{ area.id }}">{{ area.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Pickup Location (Address)</label>
+                <input type="text" name="pickup_address" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Drop Area</label>
+                <select name="drop_area_id" required>
+                    {% for area in areas %}
+                    <option value="{{ area.id }}">{{ area.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Drop Location (Address)</label>
+                <input type="text" name="drop_address" required>
+            </div>
+            
+            <button type="submit">Place Order</button>
+        </form>
+    </div>
+
+    <!-- Active Orders -->
+    <div class="card">
+        <h3>Active Orders</h3>
+        <ul>
+            {% for order in active_orders %}
+            <li>
+                Order #{{ order.id }} - Status: <strong>{{ order.status|title }}</strong> <br>
+                From: {{ order.pickup_area.name }} To: {{ order.drop_area.name }}
+            </li>
+            {% else %}
+            <li>No active orders.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Completed Orders (Rating) -->
+    <div class="card">
+        <h3>Completed Orders</h3>
+        <ul>
+            {% for order in completed_orders %}
+            <li>
+                Order #{{ order.id }} - Delivered by {{ order.partner.username }} <br>
+                {% if not order.rating %}
+                <form action="{{ url_for('customer.rate_order', order_id=order.id) }}" method="POST">
+                    <select name="rating" required>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Average</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="1">1 - Terrible</option>
+                    </select>
+                    <button type="submit">Rate</button>
+                </form>
+                {% else %}
+                Rating: {{ order.rating }}/5
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    setInterval(function() {
+        if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") {
+            window.location.reload();
+        }
+    }, 5000);
+</script>
+{% endblock %}

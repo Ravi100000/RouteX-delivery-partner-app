@@ -1,0 +1,5 @@
+flask
+flask-sqlalchemy
+click
+python-dotenv
+Werkzeug

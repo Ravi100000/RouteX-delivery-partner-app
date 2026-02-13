@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Delivery App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Delivery App</div>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    {% elif current_user.role == 'partner' %}
+                        <li><a href="{{ url_for('partner.dashboard') }}">Dashboard</a></li>
+                    {% elif current_user.role == 'customer' %}
+                        <li><a href="{{ url_for('customer.dashboard') }}">Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('auth_logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('customer.login') }}">Customer Login</a></li>
+                    <li><a href="{{ url_for('partner.login') }}">Partner Login</a></li>
+                    <li><a href="{{ url_for('admin.login') }}">Admin Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Delivery App</p>
+    </footer>
+</body>
+</html>
