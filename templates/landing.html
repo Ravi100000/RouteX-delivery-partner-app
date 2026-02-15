@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}RouteX - Delivery Made Simple{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-background">
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="{{ url_for('index') }}" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
+            <i data-lucide="truck" class="w-5 h-5 text-primary-foreground"></i>
+          </div>
+          <span class="font-display font-bold text-xl text-foreground">RouteX</span>
+        </a>
+        <div class="flex gap-3">
+          <a href="{{ url_for('partner.login') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+            Log in
+          </a>
+          <a href="{{ url_for('partner.register') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+            Get Started
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="pt-32 pb-20 px-6">
+      <div class="max-w-6xl mx-auto text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-sm font-medium mb-6">
+          Delivery Made Simple
+        </span>
+        <h1 class="font-display text-5xl md:text-7xl font-bold text-foreground leading-tight mb-6">
+          Your Deliveries,<br />
+          <span class="text-primary">Optimized.</span>
+        </h1>
+        <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+          RouteX connects customers with delivery partners for fast, reliable pickups and drop-offs across your city.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap">
+          <a href="{{ url_for('partner.register') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8 gap-2">
+            Start Delivering <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+          <a href="{{ url_for('partner.login') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md px-8">
+            I have an account
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-20 px-6 bg-card">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="font-display text-3xl font-bold text-center mb-12 text-card-foreground">Why RouteX?</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Feature 1 -->
+          <div class="p-6 rounded-xl border border-border bg-background shadow-card hover:shadow-elevated transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500 delay-0">
+            <div class="w-12 h-12 rounded-lg gradient-brand flex items-center justify-center mb-4">
+              <i data-lucide="package" class="w-6 h-6 text-primary-foreground"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-foreground">Easy Orders</h3>
+            <p class="text-muted-foreground text-sm">Place deliveries with just a few taps</p>
+          </div>
+          <!-- Feature 2 -->
+          <div class="p-6 rounded-xl border border-border bg-background shadow-card hover:shadow-elevated transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+            <div class="w-12 h-12 rounded-lg gradient-brand flex items-center justify-center mb-4">
+              <i data-lucide="truck" class="w-6 h-6 text-primary-foreground"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-foreground">Real-time Tracking</h3>
+            <p class="text-muted-foreground text-sm">Track your orders from pickup to delivery</p>
+          </div>
+          <!-- Feature 3 -->
+          <div class="p-6 rounded-xl border border-border bg-background shadow-card hover:shadow-elevated transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+            <div class="w-12 h-12 rounded-lg gradient-brand flex items-center justify-center mb-4">
+              <i data-lucide="shield" class="w-6 h-6 text-primary-foreground"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-foreground">Trusted Partners</h3>
+            <p class="text-muted-foreground text-sm">Verified and rated delivery partners</p>
+          </div>
+          <!-- Feature 4 -->
+          <div class="p-6 rounded-xl border border-border bg-background shadow-card hover:shadow-elevated transition-shadow animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+            <div class="w-12 h-12 rounded-lg gradient-brand flex items-center justify-center mb-4">
+              <i data-lucide="zap" class="w-6 h-6 text-primary-foreground"></i>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-foreground">Fast Delivery</h3>
+            <p class="text-muted-foreground text-sm">Quick area-based delivery matching</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roles -->
+    <section class="py-20 px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="font-display text-3xl font-bold mb-4 text-foreground">For Everyone</h2>
+        <p class="text-muted-foreground mb-12">Whether you're sending a package, delivering one, or managing the platform.</p>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-xl border border-border bg-card shadow-card">
+            <div class="w-3 h-3 rounded-full bg-primary mb-4"></div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-card-foreground">Customer</h3>
+            <p class="text-muted-foreground text-sm">Place orders, track deliveries, rate partners</p>
+          </div>
+          <div class="p-6 rounded-xl border border-border bg-card shadow-card">
+            <div class="w-3 h-3 rounded-full bg-success mb-4"></div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-card-foreground">Partner</h3>
+            <p class="text-muted-foreground text-sm">Accept orders, manage availability, earn money</p>
+          </div>
+          <div class="p-6 rounded-xl border border-border bg-card shadow-card">
+            <div class="w-3 h-3 rounded-full bg-info mb-4"></div>
+            <h3 class="font-display font-semibold text-lg mb-2 text-card-foreground">Admin</h3>
+            <p class="text-muted-foreground text-sm">Manage areas, set charges, approve partners</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-10 px-6 border-t border-border">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded gradient-brand flex items-center justify-center">
+            <i data-lucide="truck" class="w-3.5 h-3.5 text-primary-foreground"></i>
+          </div>
+          <span class="font-display font-semibold text-foreground">RouteX</span>
+        </div>
+        <p class="text-sm text-muted-foreground">© 2026 RouteX. All rights reserved.</p>
+      </div>
+    </footer>
+</div>
+{% endblock %}

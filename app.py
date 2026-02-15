@@ -118,7 +118,8 @@ def dashboard():
         avg_rating = db.session.query(func.avg(Order.rating)).filter(Order.partner_id == partner.id).scalar()
         partner.rating_avg = avg_rating
     total_earnings = db.session.query(func.sum(Order.commission)).filter(Order.status == 'completed').scalar() or 0.0
-    return render_template('admin_dashboard.html', areas=areas, charges=charges, pending_partners=pending_partners, active_partners=active_partners, total_earnings=total_earnings, current_commission=current_commission)
+    total_orders = Order.query.count()
+    return render_template('admin_dashboard.html', areas=areas, charges=charges, pending_partners=pending_partners, active_partners=active_partners, total_earnings=total_earnings, current_commission=current_commission, total_orders=total_orders)
 
 @admin_bp.route('/set_commission', methods=['POST'])
 @admin_login_required
@@ -427,7 +428,7 @@ def create_app(test_config=None):
 
     @app.route('/')
     def index():
-        return render_template('base.html')
+        return render_template('landing.html')
 
     with app.app_context():
         db.create_all()

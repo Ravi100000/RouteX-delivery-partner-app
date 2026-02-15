@@ -1,117 +1,85 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --background: 30 6% 97%;
+    --foreground: 20 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 20 6% 90%;
+    --secondary-foreground: 20 14% 10%;
+
+    --muted: 30 6% 94%;
+    --muted-foreground: 20 6% 44%;
+
+    --accent: 24 95% 95%;
+    --accent-foreground: 24 95% 40%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 20 6% 88%;
+    --input: 20 6% 88%;
+    --ring: 24 95% 53%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 20 14% 10%;
+    --sidebar-foreground: 30 6% 94%;
+    --sidebar-primary: 24 95% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 20 10% 16%;
+    --sidebar-accent-foreground: 30 6% 94%;
+    --sidebar-border: 20 10% 18%;
+    --sidebar-ring: 24 95% 53%;
+
+    /* Custom tokens */
+    --success: 142 72% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 20 14% 10%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --gradient-brand: linear-gradient(135deg, hsl(24, 95%, 53%), hsl(38, 92%, 50%));
+    --gradient-dark: linear-gradient(135deg, hsl(20, 14%, 10%), hsl(20, 10%, 16%));
+    --shadow-card: 0 1px 3px 0 hsl(20 14% 10% / 0.06), 0 1px 2px -1px hsl(20 14% 10% / 0.06);
+    --shadow-elevated: 0 10px 25px -5px hsl(20 14% 10% / 0.1), 0 8px 10px -6px hsl(20 14% 10% / 0.1);
 }
 
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
-}
+.dark {
+    --background: 20 14% 6%;
+    --foreground: 30 6% 94%;
 
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    --card: 20 14% 10%;
+    --card-foreground: 30 6% 94%;
 
-.nav-links {
-    list-style: none;
-    display: flex;
-}
+    --popover: 20 14% 10%;
+    --popover-foreground: 30 6% 94%;
 
-.nav-links li {
-    margin-left: 1rem;
-}
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
 
-.nav-links a {
-    color: #fff;
-    text-decoration: none;
-}
+    --secondary: 20 10% 16%;
+    --secondary-foreground: 30 6% 94%;
 
-main {
-    padding: 2rem;
-}
+    --muted: 20 10% 16%;
+    --muted-foreground: 20 6% 56%;
 
-.auth-container {
-    background: #fff;
-    padding: 2rem;
-    max-width: 400px;
-    margin: 2rem auto;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+    --accent: 20 10% 16%;
+    --accent-foreground: 24 95% 60%;
 
-.form-group {
-    margin-bottom: 1rem;
-}
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    box-sizing: border-box;
-}
-
-button {
-    background-color: #333;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #555;
-}
-
-.flashes {
-    list-style: none;
-    padding: 0;
-}
-
-.flashes li {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.flashes .error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.flashes .success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-/* Dashboard styles */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-}
-
-.card {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 0.5rem;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    --border: 20 10% 18%;
+    --input: 20 10% 18%;
+    --ring: 24 95% 53%;
 }

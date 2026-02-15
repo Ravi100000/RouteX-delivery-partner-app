@@ -1,92 +1,126 @@
-{% extends 'base.html' %}
+{% extends "dashboard_base.html" %}
 
 {% block title %}Customer Dashboard{% endblock %}
+{% block dashboard_title %}Customer Dashboard{% endblock %}
 
-{% block content %}
-<h2>Customer Dashboard</h2>
-
-<div class="dashboard-grid">
-    <!-- Place Order -->
-    <div class="card">
-        <h3>Place New Order</h3>
-        <form action="{{ url_for('customer.create_order') }}" method="POST">
-            <div class="form-group">
-                <label>Pickup Area</label>
-                <select name="pickup_area_id" required>
-                    {% for area in areas %}
-                    <option value="{{ area.id }}">{{ area.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Pickup Location (Address)</label>
-                <input type="text" name="pickup_address" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Drop Area</label>
-                <select name="drop_area_id" required>
-                    {% for area in areas %}
-                    <option value="{{ area.id }}">{{ area.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Drop Location (Address)</label>
-                <input type="text" name="drop_address" required>
-            </div>
-            
-            <button type="submit">Place Order</button>
-        </form>
+{% block dashboard_content %}
+  <!-- Place Order -->
+  <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card mb-8">
+    <div class="flex flex-col space-y-1.5 p-6">
+      <h3 class="font-display font-semibold leading-none tracking-tight text-lg flex items-center gap-2">
+        <i data-lucide="plus" class="w-5 h-5 text-primary"></i> Place New Order
+      </h3>
     </div>
-
-    <!-- Active Orders -->
-    <div class="card">
-        <h3>Active Orders</h3>
-        <ul>
-            {% for order in active_orders %}
-            <li>
-                Order #{{ order.id }} - Status: <strong>{{ order.status|title }}</strong> <br>
-                From: {{ order.pickup_area.name }} To: {{ order.drop_area.name }}
-            </li>
-            {% else %}
-            <li>No active orders.</li>
+    <div class="p-6 pt-0">
+      <form action="{{ url_for('customer.create_order') }}" method="POST" class="grid md:grid-cols-2 gap-4" id="orderForm">
+        <div>
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Pickup Area</label>
+          <select name="pickup_area_id" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5">
+            <option value="" disabled selected>Select pickup area</option>
+            {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.name }}</option>
             {% endfor %}
-        </ul>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Drop Area</label>
+          <select name="drop_area_id" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5">
+            <option value="" disabled selected>Select drop area</option>
+            {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Pickup Address</label>
+          <input name="pickup_address" type="text" placeholder="Full pickup address" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5" />
+        </div>
+        <div>
+          <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Drop Address</label>
+          <input name="drop_address" type="text" placeholder="Full drop address" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5" />
+        </div>
+        <div class="md:col-span-2">
+          <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full md:w-auto">Place Order</button>
+        </div>
+      </form>
     </div>
-    
-    <!-- Completed Orders (Rating) -->
-    <div class="card">
-        <h3>Completed Orders</h3>
-        <ul>
-            {% for order in completed_orders %}
-            <li>
-                Order #{{ order.id }} - Delivered by {{ order.partner.username }} <br>
-                {% if not order.rating %}
-                <form action="{{ url_for('customer.rate_order', order_id=order.id) }}" method="POST">
-                    <select name="rating" required>
-                        <option value="5">5 - Excellent</option>
-                        <option value="4">4 - Good</option>
-                        <option value="3">3 - Average</option>
-                        <option value="2">2 - Poor</option>
-                        <option value="1">1 - Terrible</option>
-                    </select>
-                    <button type="submit">Rate</button>
+  </div>
+
+  <!-- Active Orders -->
+  <div class="mb-8">
+    <h2 class="font-display text-lg font-semibold mb-4 text-foreground">Active Orders ({{ active_orders|length }})</h2>
+    {% if not active_orders %}
+        <p class="text-muted-foreground text-sm">No active orders.</p>
+    {% endif %}
+    <div class="grid gap-3">
+      {% for order in active_orders %}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-display font-semibold text-card-foreground">Order #{{ order.id }}</span>
+              <span class="px-3 py-1 rounded-full text-xs font-medium capitalize 
+                {% if order.status == 'pending' %}bg-warning/20 text-warning
+                {% elif order.status == 'accepted' %}bg-info/20 text-info
+                {% elif order.status == 'picked_up' %}bg-primary/20 text-primary
+                {% elif order.status == 'arrived' %}bg-success/20 text-success
+                {% else %}bg-muted text-muted-foreground{% endif %}">
+                {{ order.status|replace('_', ' ') }}
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-primary"></i> {{ order.pickup_area.name }} — {{ order.pickup_address }}
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              <i data-lucide="circle" class="w-3.5 h-3.5 text-success"></i> {{ order.drop_area.name }} — {{ order.drop_address }}
+            </div>
+            <p class="text-right font-display font-bold text-card-foreground mt-2">${{ "%.2f"|format(order.amount) }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Completed Orders -->
+  {% if completed_orders %}
+    <div>
+      <h2 class="font-display text-lg font-semibold mb-4 text-foreground">Completed Orders</h2>
+      <div class="grid gap-3">
+        {% for order in completed_orders %}
+          <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-display font-semibold text-card-foreground">Order #{{ order.id }}</span>
+                <span class="text-sm font-medium text-success">Completed</span>
+              </div>
+              <p class="text-sm text-muted-foreground mb-3">
+                {{ order.pickup_area.name }} → {{ order.drop_area.name }} • ${{ order.amount }}
+              </p>
+              
+              {% if order.rating %}
+                <div class="flex items-center gap-1">
+                  {% for i in range(1, 6) %}
+                    <i data-lucide="star" class="w-4 h-4 {{ 'fill-primary text-primary' if i <= order.rating else 'text-muted' }}"></i>
+                  {% endfor %}
+                  <span class="text-sm text-muted-foreground ml-2">{{ order.rating }}/5</span>
+                </div>
+              {% else %}
+                <form action="{{ url_for('customer.rate_order', order_id=order.id) }}" method="POST" class="flex items-center gap-2">
+                  <label class="text-sm">Rate:</label>
+                  <select name="rating" class="flex h-9 w-20 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="5">5 ★</option>
+                    <option value="4">4 ★</option>
+                    <option value="3">3 ★</option>
+                    <option value="2">2 ★</option>
+                    <option value="1">1 ★</option>
+                  </select>
+                  <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">Submit</button>
                 </form>
-                {% else %}
-                Rating: {{ order.rating }}/5
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-</div>
-
-<script>
-    setInterval(function() {
-        if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") {
-            window.location.reload();
-        }
-    }, 5000);
-</script>
+  {% endif %}
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-background">
+      <nav class="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <a href="{{ url_for('index') }}" class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg gradient-brand flex items-center justify-center">
+              <i data-lucide="truck" class="w-4 h-4 text-primary-foreground"></i>
+            </div>
+            <span class="font-display font-bold text-lg text-foreground">RouteX</span>
+          </a>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              <i data-lucide="user" class="w-4 h-4"></i>
+              <span>{{ current_user.username }}</span>
+              <span class="px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-xs capitalize">{{ current_user.role }}</span>
+            </div>
+            <a href="{{ url_for('auth_logout') }}" class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3">
+              <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+            </a>
+          </div>
+        </div>
+      </nav>
+      <main class="max-w-6xl mx-auto px-6 py-8">
+        <h1 class="font-display text-2xl font-bold text-foreground mb-6">{% block dashboard_title %}{% endblock %}</h1>
+        {% block dashboard_content %}{% endblock %}
+      </main>
+</div>
+{% endblock %}

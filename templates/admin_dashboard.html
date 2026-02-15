@@ -1,96 +1,175 @@
-{% extends 'base.html' %}
+{% extends "dashboard_base.html" %}
 
 {% block title %}Admin Dashboard{% endblock %}
+{% block dashboard_title %}Admin Dashboard{% endblock %}
 
-{% block content %}
-<h2>Admin Dashboard</h2>
+{% block dashboard_content %}
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-muted-foreground">Total Orders</span>
+                <i data-lucide="trending-up" class="w-4 h-4 text-primary"></i>
+            </div>
+            <p class="text-2xl font-display font-bold text-card-foreground">{{ total_orders or 0 }}</p> <!-- passed from view? No, view passes specific lists. I need to count in view or template. Template: charges|length etc. Wait, 'total_earnings' is passed. I need active_partners|length. -->
+            <!-- Correcting stats based on view variables -->
+        </div>
+    </div>
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-muted-foreground">Total Earnings</span>
+                <i data-lucide="dollar-sign" class="w-4 h-4 text-success"></i>
+            </div>
+            <p class="text-2xl font-display font-bold text-card-foreground">${{ "%.2f"|format(total_earnings) }}</p>
+        </div>
+    </div>
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-muted-foreground">Active Partners</span>
+                <i data-lucide="users" class="w-4 h-4 text-info"></i>
+            </div>
+            <p class="text-2xl font-display font-bold text-card-foreground">{{ active_partners|length }}</p>
+        </div>
+    </div>
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-muted-foreground">Areas</span>
+                <i data-lucide="map-pin" class="w-4 h-4 text-warning"></i>
+            </div>
+            <p class="text-2xl font-display font-bold text-card-foreground">{{ areas|length }}</p>
+        </div>
+    </div>
+  </div>
 
-<div class="dashboard-grid">
-    <!-- Areas Management -->
-    <div class="card">
-        <h3>Predefined Delivery Areas</h3>
-        <form action="{{ url_for('admin.add_area') }}" method="POST">
-            <input type="text" name="name" placeholder="New Area Name" required>
-            <button type="submit">Add Area</button>
+  <div class="grid lg:grid-cols-2 gap-6">
+    <!-- Commission -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="flex flex-col space-y-1.5 p-6">
+        <h3 class="font-display font-semibold leading-none tracking-tight text-lg">Commission Rate</h3>
+      </div>
+      <div class="p-6 pt-0">
+        <form action="{{ url_for('admin.set_commission') }}" method="POST" class="flex gap-3 items-end">
+          <div class="flex-1">
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Percentage (%)</label>
+            <input name="percentage" type="number" value="{{ current_commission }}" min="0" max="100" step="0.1" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5" />
+          </div>
+          <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">Update</button>
         </form>
-        <ul>
+      </div>
+    </div>
+
+    <!-- Add Area -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="flex flex-col space-y-1.5 p-6">
+         <h3 class="font-display font-semibold leading-none tracking-tight text-lg">Add Area</h3>
+      </div>
+      <div class="p-6 pt-0">
+        <form action="{{ url_for('admin.add_area') }}" method="POST" class="flex gap-3 items-end">
+          <div class="flex-1">
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Area Name</label>
+            <input name="name" type="text" placeholder="e.g. Westside" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5" />
+          </div>
+          <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"><i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add</button>
+        </form>
+        <div class="flex flex-wrap gap-2 mt-4">
             {% for area in areas %}
-            <li>{{ area.name }}</li>
+                <span class="px-3 py-1 rounded-full bg-accent text-accent-foreground text-sm">{{ area.name }}</span>
             {% endfor %}
-        </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- Charges Management -->
-    <div class="card">
-        <h3>Delivery Charges</h3>
-        <form action="{{ url_for('admin.set_charge') }}" method="POST">
-            <select name="from_area_id" required>
-                <option value="" disabled selected>From Area</option>
-                {% for area in areas %}
-                <option value="{{ area.id }}">{{ area.name }}</option>
-                {% endfor %}
-            </select>
-            <select name="to_area_id" required>
-                <option value="" disabled selected>To Area</option>
-                {% for area in areas %}
-                <option value="{{ area.id }}">{{ area.name }}</option>
-                {% endfor %}
-            </select>
-            <input type="number" step="0.01" name="amount" placeholder="Charge Amount" required>
-            <button type="submit">Set Charge</button>
-        </form>
-        <table>
-            <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Amount</th>
-            </tr>
-            {% for charge in charges %}
-            <tr>
-                <td>{{ charge.from_area.name }}</td>
-                <td>{{ charge.to_area.name }}</td>
-                <td>${{ charge.amount }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    
-    <!-- Partner Management -->
-    <div class="card">
-        <h3>Partner Requests</h3>
-        <ul>
-            {% for partner in pending_partners %}
-            <li>
-                {{ partner.username }} 
-                <a href="{{ url_for('admin.approve_partner', partner_id=partner.id) }}">Accept</a>
-            </li>
-            {% else %}
-            <li>No pending requests.</li>
-            {% endfor %}
-        </ul>
-
-        <h3>Active Partners</h3>
-         <ul>
-            {% for partner in active_partners %}
-            <li>
-                {{ partner.username }} - Rating: {{ partner.rating_avg|round(1) if partner.rating_avg else 'N/A' }}
-                <a href="{{ url_for('admin.remove_partner', partner_id=partner.id) }}" onclick="return confirm('Are you sure?')">Remove</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Earnings & Analytics -->
-    <div class="card">
-        <h3>Commission Settings</h3>
-        <form action="{{ url_for('admin.set_commission') }}" method="POST">
-            <label>Current Percentage: {{ current_commission }}%</label>
-            <input type="number" step="0.1" name="percentage" value="{{ current_commission }}" required>
-            <button type="submit">Update</button>
+    <!-- Set Charges -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="flex flex-col space-y-1.5 p-6">
+        <h3 class="font-display font-semibold leading-none tracking-tight text-lg">Set Delivery Charge</h3>
+      </div>
+      <div class="p-6 pt-0">
+        <form action="{{ url_for('admin.set_charge') }}" method="POST" class="space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">From Area</label>
+              <select name="from_area_id" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5">
+                    <option value="" disabled selected>Select</option>
+                    {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area.name }}</option>
+                    {% endfor %}
+              </select>
+            </div>
+            <div>
+               <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">To Area</label>
+               <select name="to_area_id" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5">
+                    <option value="" disabled selected>Select</option>
+                    {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area.name }}</option>
+                    {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Amount ($)</label>
+            <input name="amount" type="number" placeholder="50" step="0.01" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1.5" />
+          </div>
+          <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full">Set Charge</button>
         </form>
 
-        <h3>Total Earnings (Commission)</h3>
-        <p class="large-text">${{ total_earnings }}</p>
+        {% if charges %}
+            <div class="mt-4 max-h-40 overflow-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="text-muted-foreground"><th class="text-left pb-2">From</th><th class="text-left pb-2">To</th><th class="text-right pb-2">Amount</th></tr></thead>
+                    <tbody>
+                        {% for charge in charges %}
+                        <tr class="border-t border-border">
+                            <td class="py-1.5 text-card-foreground">{{ charge.from_area.name }}</td>
+                            <td class="py-1.5 text-card-foreground">{{ charge.to_area.name }}</td>
+                            <td class="py-1.5 text-right text-card-foreground">${{ "%.2f"|format(charge.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+      </div>
     </div>
-</div>
+
+    <!-- Partners -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="flex flex-col space-y-1.5 p-6">
+         <h3 class="font-display font-semibold leading-none tracking-tight text-lg">Delivery Partners</h3>
+      </div>
+      <div class="p-6 pt-0">
+        {% if pending_partners %}
+            <div class="mb-4">
+                <p class="text-sm font-medium text-muted-foreground mb-2">Pending Approval</p>
+                {% for p in pending_partners %}
+                  <div class="flex items-center justify-between p-3 rounded-lg bg-accent mb-2">
+                    <span class="text-sm font-medium text-foreground">{{ p.username }}</span>
+                    <div class="flex gap-2">
+                      <a href="{{ url_for('admin.approve_partner', partner_id=p.id) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1"><i data-lucide="check" class="w-3 h-3"></i> Approve</a>
+                      <a href="{{ url_for('admin.remove_partner', partner_id=p.id) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 text-destructive"><i data-lucide="x" class="w-3 h-3"></i></a>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <p class="text-sm font-medium text-muted-foreground mb-2">Active Partners ({{ active_partners|length }})</p>
+        {% for p in active_partners %}
+           <div class="flex items-center justify-between p-3 rounded-lg border border-border mb-2">
+                <div>
+                  <span class="text-sm font-medium text-card-foreground">{{ p.username }}</span>
+                  <span class="ml-2 text-xs px-2 py-0.5 rounded-full {{ 'bg-success/20 text-success' if p.is_online else 'bg-muted text-muted-foreground' }}">
+                    {{ 'Online' if p.is_online else 'Offline' }}
+                  </span>
+                </div>
+                <a href="{{ url_for('admin.remove_partner', partner_id=p.id) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 text-destructive hover:text-destructive"><i data-lucide="x" class="w-3 h-3"></i></a>
+           </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

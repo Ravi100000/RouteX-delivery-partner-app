@@ -1,83 +1,129 @@
-{% extends 'base.html' %}
+{% extends "dashboard_base.html" %}
 
 {% block title %}Partner Dashboard{% endblock %}
+{% block dashboard_title %}Partner Dashboard{% endblock %}
 
-{% block content %}
-<h2>Partner Dashboard</h2>
-<div class="wallet-info" style="float: right; font-weight: bold;">
-    Wallet: ${{ "%.2f"|format(current_user.wallet_balance) }}
-</div>
-<div class="status-bar">
-    Status: <strong>{{ 'Online' if current_user.is_online else 'Offline' }}</strong>
-    <a href="{{ url_for('partner.toggle_status') }}">{{ 'Go Offline' if current_user.is_online else 'Go Online' }}</a>
-</div>
-
-{% if current_user.is_online %}
-<div class="card">
-    <h3>Current Area</h3>
-    <form action="{{ url_for('partner.set_area') }}" method="POST">
-        <select name="area_id" onchange="this.form.submit()">
-            <option value="" disabled {{ 'selected' if not current_user.current_area_id else '' }}>Select Area</option>
-            {% for area in areas %}
-            <option value="{{ area.id }}" {{ 'selected' if current_user.current_area_id == area.id else '' }}>{{ area.name }}</option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
-{% endif %}
-
-<div class="dashboard-grid">
-    <!-- Available Orders -->
-    <div class="card">
-        <h3>Available Orders in {{ current_area_name if current_area_name else 'Selected Area' }}</h3>
-        {% if has_active_order %}
-        <p class="notification warning">You have an active order. Please complete it before accepting new ones.</p>
-        {% elif available_orders %}
-        <ul>
-            {% for order in available_orders %}
-            <li>
-                From: {{ order.pickup_address }} <br>
-                To: {{ order.drop_address }} <br>
-                Earn: ${{ order.amount - order.commission }}
-                <a href="{{ url_for('partner.accept_order', order_id=order.id) }}">Accept</a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No orders available.</p>
-        {% endif %}
+{% block dashboard_content %}
+  <!-- Status Bar -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="p-4 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-muted-foreground">Status</p>
+          <p class="font-display font-bold text-card-foreground">{{ 'Online' if current_user.is_online else 'Offline' }}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <label for="online" class="text-sm text-muted-foreground">Go Online</label>
+          <a href="{{ url_for('partner.toggle_status') }}" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {{ 'bg-primary' if current_user.is_online else 'bg-input' }}">
+            <span class="{{ 'translate-x-5' if current_user.is_online else 'translate-x-1' }} inline-block h-4 w-4 transform rounded-full bg-background transition-transform"></span>
+          </a>
+        </div>
+      </div>
     </div>
 
-    <!-- Active Orders -->
-    <div class="card">
-        <h3>My Active Orders</h3>
-        {% if my_orders %}
-        <ul>
-            {% for order in my_orders %}
-            <li>
-                Order #{{ order.id }} - {{ order.status }}
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="p-4">
+        <p class="text-sm text-muted-foreground mb-2">Current Area</p>
+        <form action="{{ url_for('partner.set_area') }}" method="POST">
+             <select name="area_id" onchange="this.form.submit()" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                <option value="" disabled {{ 'selected' if not current_user.current_area_id else '' }}>Select area</option>
+                {% for area in areas %}
+                    <option value="{{ area.id }}" {{ 'selected' if current_user.current_area_id == area.id else '' }}>{{ area.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+      <div class="p-4 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-muted-foreground">Wallet Balance</p>
+          <p class="font-display text-2xl font-bold text-card-foreground">${{ "%.2f"|format(current_user.wallet_balance) }}</p>
+        </div>
+        <i data-lucide="wallet" class="w-8 h-8 text-primary"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Orders -->
+  {% if has_active_order %}
+    <div class="mb-8">
+      <h2 class="font-display text-lg font-semibold mb-4 text-foreground">Active Order</h2>
+      {% for order in my_orders %}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card border-l-4 border-l-primary">
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-display font-semibold text-card-foreground">Order #{{ order.id }}</span>
+              <span class="px-3 py-1 rounded-full text-xs font-medium capitalize 
+                {% if order.status == 'picked_up' %}bg-primary/20 text-primary{% elif order.status == 'arrived' %}bg-success/20 text-success{% else %}bg-info/20 text-info{% endif %}">
+                {{ order.status|replace('_', ' ') }}
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-primary"></i>
+              <span>{{ order.pickup_area.name }} — {{ order.pickup_address }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+              <i data-lucide="circle" class="w-3.5 h-3.5 text-success"></i>
+              <span>{{ order.drop_area.name }} — {{ order.drop_address }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="font-display font-bold text-lg text-card-foreground">${{ "%.2f"|format(order.amount) }}</span>
+              <div class="flex gap-2">
+                <a href="{{ url_for('partner.update_status', order_id=order.id, status='declined') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">Decline</a>
+                
                 {% if order.status == 'accepted' %}
-                    <a href="{{ url_for('partner.update_status', order_id=order.id, status='picked_up') }}">Mark Picked Up</a>
-                    <a href="{{ url_for('partner.update_status', order_id=order.id, status='declined') }}" style="color: red; margin-left: 10px;">Decline/Cancel</a>
+                    <a href="{{ url_for('partner.update_status', order_id=order.id, status='picked_up') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">
+                        Mark Picked Up <i data-lucide="arrow-right" class="w-3.5 h-3.5 ml-1"></i>
+                    </a>
                 {% elif order.status == 'picked_up' %}
-                     <a href="{{ url_for('partner.update_status', order_id=order.id, status='arrived') }}">Arrived at Drop</a>
+                    <a href="{{ url_for('partner.update_status', order_id=order.id, status='arrived') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">
+                        Mark Arrived <i data-lucide="arrow-right" class="w-3.5 h-3.5 ml-1"></i>
+                    </a>
                 {% elif order.status == 'arrived' %}
-                     <a href="{{ url_for('partner.update_status', order_id=order.id, status='completed') }}">Complete</a>
+                    <a href="{{ url_for('partner.update_status', order_id=order.id, status='completed') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-success text-success-foreground hover:bg-success/90 h-9 rounded-md px-3">
+                        Complete Delivery <i data-lucide="check" class="w-3.5 h-3.5 ml-1"></i>
+                    </a>
                 {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No active orders.</p>
-        {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
-</div>
+  {% endif %}
 
-<script>
-    setInterval(function() {
-         if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") {
-            window.location.reload();
-        }
-    }, 5000);
-</script>
+  <!-- Available Orders -->
+  <div class="mb-8">
+    <h2 class="font-display text-lg font-semibold mb-4 text-foreground">Available Orders</h2>
+    {% if not current_user.is_online %}
+        <p class="text-muted-foreground text-sm">Go online to see available orders.</p>
+    {% elif not current_user.current_area_id %}
+        <p class="text-muted-foreground text-sm">Select your area to see orders.</p>
+    {% elif not available_orders %}
+        <p class="text-muted-foreground text-sm">No orders available in your area right now.</p>
+    {% elif has_active_order %}
+        <p class="text-muted-foreground text-sm">Complete your active order to accept new ones.</p>
+    {% endif %}
+
+    <div class="grid gap-3 mt-2">
+      {% for order in available_orders %}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-card">
+          <div class="p-4 flex items-center justify-between">
+            <div>
+              <p class="font-medium text-sm text-card-foreground">
+                {{ order.pickup_area.name }} → {{ order.drop_area.name }}
+              </p>
+              <p class="text-xs text-muted-foreground mt-0.5">{{ order.pickup_address }} → {{ order.drop_address }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-display font-bold text-card-foreground">${{ order.amount }}</span>
+              <a href="{{ url_for('partner.accept_order', order_id=order.id) }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">Accept</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}
