@@ -5,7 +5,7 @@ import os
 sys.path.append(os.getcwd())
 
 try:
-    from delivery_app.app import create_app, db, User, Area, Charge, Order, Setting
+    from app import create_app, db, User, Area, Charge, Order, Setting
     # from delivery_app.models import User, Area, Charge, Order, Setting # REMOVED
 except ImportError as e:
     print(f"Import Error: {e}")
