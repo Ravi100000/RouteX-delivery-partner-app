@@ -140,10 +140,34 @@ def set_commission():
 def add_area():
     if g.user.role != 'admin': return redirect(url_for('admin.login'))
     name = request.form.get('name')
-    if name:
+    self_charge = request.form.get('self_charge')
+
+    if name and self_charge:
         if not Area.query.filter_by(name=name).first():
-            db.session.add(Area(name=name))
+            new_area = Area(name=name)
+            db.session.add(new_area)
+            db.session.flush() # Get ID
+            
+            # Local Delivery Charge
+            db.session.add(Charge(from_area_id=new_area.id, to_area_id=new_area.id, amount=float(self_charge)))
+            
+            # Charges to existing areas
+            existing_areas = Area.query.filter(Area.id != new_area.id).all()
+            for area in existing_areas:
+                dist = request.form.get(f'distance_{area.id}')
+                if dist:
+                    amount = float(dist)
+                    # Create bi-directional charges
+                    db.session.add(Charge(from_area_id=new_area.id, to_area_id=area.id, amount=amount))
+                    db.session.add(Charge(from_area_id=area.id, to_area_id=new_area.id, amount=amount))
+            
             db.session.commit()
+            flash('Area added successfully with charges.', 'success')
+        else:
+            flash('Area with this name already exists.', 'error')
+    else:
+        flash('Missing area name or local charge.', 'error')
+
     return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/set_charge', methods=['POST'])
